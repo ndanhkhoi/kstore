@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.1.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.3.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<context:component-scan base-package="com.ndanhkhoi" />
+		
+ 	<bean class = "org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	<bean id = "dataSource" class ="org.apache.commons.dbcp.BasicDataSource" destroy-method = "close">
+		<property name = "driverClassName"  value = "com.mysql.jdbc.Driver" />
+		<property name = "url" value = "jdbc:mysql://localhost/kstore?characterEncoding=UTF-8" />
+		<property name = "username" value = "root" />
+		<property name = "password" value = "" />
+	 </bean>
+	 <bean id = "sessionFactory" class = "org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+	 	<property name = "dataSource" ref = "dataSource" />
+	 	<property name= "packagesToScan" value = "com.ndanhkhoi.entity" />
+		 <property name="hibernateProperties">
+		 	<props>
+		 		<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+		 		<prop key="hibernate.show.sql">true</prop>
+				<prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+				<prop key="hibernate.connection.useUnicode">true</prop>
+				<prop key="hibernate.connection.characterEncoding">UTF-8</prop>
+				<prop key="hibernate.connection.charSet">UTF-8</prop> 
+		 	</props>
+        </property>
+	 </bean>
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="multipartResolver" class = "org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    	<property name="maxUploadSize" value="10485760" />
+    </bean>
+	<mvc:resources mapping="/resources/**" location="/resources/" cache-period="31556926"/>
+	<mvc:resources mapping="/avt/**" location="/avt/" cache-period="31556926"/>
+	<mvc:resources mapping="/product/**" location="/product/" cache-period="31556926"/>
+    <mvc:annotation-driven />	
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    
+    <import resource="spring-security.xml"/>
+    
+</beans>
